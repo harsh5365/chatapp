@@ -1,9 +1,15 @@
 import React from 'react';
+import EnterMessage from './EnterMessage';
 
-const MessagingWindow = ({ messages, sendMessage }) => {
+const MessagingWindow = ({ messages, sendMessage, thread }) => {
     return (
         <div className="messages flex-grow overflow-y-auto">
-            <h2 className="text-lg font-bold p-4">Messages</h2>
+            <div className="thread-info bg-gray-100 p-4 border-b">
+                <h2 className="text-lg font-bold">{thread?.name || 'Thread'}</h2>
+                <p className="text-sm text-gray-600">
+                    Participants: {thread?.participants?.join(', ') || 'No participants'}
+                </p>
+            </div>
             <div className="message-list p-4">
                 {messages.map((message) => (
                     <div key={message.id} className="mb-4">
@@ -22,19 +28,7 @@ const MessagingWindow = ({ messages, sendMessage }) => {
                     </div>
                 ))}
             </div>
-            <div className="message-input p-4">
-                <textarea
-                    className="w-full border rounded p-2"
-                    placeholder="Type your message..."
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                            e.preventDefault();
-                            sendMessage(e.target.value);
-                            e.target.value = '';
-                        }
-                    }}
-                ></textarea>
-            </div>
+            <EnterMessage sendMessage={sendMessage} />
         </div>
     );
 };

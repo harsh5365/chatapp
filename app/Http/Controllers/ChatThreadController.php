@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\ChatThread;
 use App\Models\Message;
+use App\Models\User;
+use App\Models\ThreadParticipant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -22,7 +24,10 @@ class ChatThreadController extends Controller
      */
     public function getThreads()
     {
-        $threads = ChatThread::where('created_by', Auth::id())->get();
+        $threads = ChatThread::whereHas('participants', function ($query) {
+            $query->where('user_id', Auth::id());
+        })->get(); // Fetch threads where the logged-in user is a participant
+
         return response()->json($threads);
     }
 
@@ -31,7 +36,11 @@ class ChatThreadController extends Controller
      */
     public function getMessages(ChatThread $thread)
     {
-        $messages = $thread->messages()->with('user')->get();
+        if (!$thread->participants()->where('user_id', Auth::id())->exists()) {
+            abort(403, 'Unauthorized'); // Ensure the user is a participant
+        }
+
+        $messages = $thread->messages()->with('user')->get(); // Fetch messages with user details
         return response()->json($messages);
     }
 
@@ -40,6 +49,10 @@ class ChatThreadController extends Controller
      */
     public function sendMessage(Request $request, ChatThread $thread)
     {
+        if (!$thread->participants()->where('user_id', Auth::id())->exists()) {
+            abort(403, 'Unauthorized'); // Ensure the user is a participant
+        }
+
         $request->validate([
             'content' => 'required_without_all:file_path,link|string',
             'file_path' => 'nullable|string',
