@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ChatThreadController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -22,6 +23,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/chat', [ChatThreadController::class, 'index'])->name('chat.index');
+    Route::get('/chat/threads', [ChatThreadController::class, 'getThreads']);
+    Route::get('/chat/threads/{thread}/messages', [ChatThreadController::class, 'getMessages']);
+    Route::post('/chat/threads/{thread}/messages', [ChatThreadController::class, 'sendMessage']);
 });
 
 require __DIR__.'/auth.php';
