@@ -1,9 +1,11 @@
 // Add a left sidebar component for logged-in users with a link to chat with friends
 import React from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import ApplicationLogo from './ApplicationLogo';
 
 const Sidebar = () => {
+    const { url } = usePage(); // Get the current URL from Inertia.js
+
     return (
         <div className="sidebar text-gray-900 h-full w-64">
             <div className="p-4">
@@ -13,10 +15,24 @@ const Sidebar = () => {
                 </div>
                 <ul className="mt-4 space-y-2">
                     <li>
-                        <Link href="/dashboard" className="block px-4 py-2 rounded hover:bg-gray-700 hover:text-white">Dashboard</Link>
+                        <Link
+                            href="/dashboard"
+                            className={`block px-4 py-2 rounded ${
+                                url === '/dashboard' ? 'bg-gray-700 text-white' : 'hover:bg-gray-700 hover:text-white'
+                            }`}
+                        >
+                            Dashboard
+                        </Link>
                     </li>
                     <li>
-                        <Link href="/chat" className="block px-4 py-2 rounded hover:bg-gray-700 hover:text-white">Chat with Friends</Link>
+                        <Link
+                            href="/chat"
+                            className={`block px-4 py-2 rounded ${
+                                url === '/chat' ? 'bg-gray-700 text-white' : 'hover:bg-gray-700 hover:text-white'
+                            }`}
+                        >
+                            Chat with Friends
+                        </Link>
                     </li>
                     {/* Add more links here as needed */}
                 </ul>
